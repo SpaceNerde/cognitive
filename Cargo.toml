@@ -1,4 +1,3 @@
-workspace = { members = ["rusty-ndarray"] }
 [package]
 name = "rusty-brain"
 version = "0.1.0"
