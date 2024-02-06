@@ -45,9 +45,6 @@ impl Matrix {
     }
 
     pub fn matrix_sum(matrix_1: Matrix, matrix_2: Matrix) -> Matrix{
-        assert_eq!(matrix_1.rows, matrix_2.rows, "Matrix dimensions mismatch");
-        assert_eq!(matrix_1.cols, matrix_2.cols, "Matrix dimensions mismatch");
-
         let mut buffer_matrix = Matrix::new(
             matrix_1.rows,
             matrix_2.cols
