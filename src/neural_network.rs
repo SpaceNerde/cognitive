@@ -115,14 +115,14 @@ impl NeuralNetwork {
         let n1 = t_out.cols;
 
         for i in 0..n0 {
-            let mut x = Matrix::matrix_row(t_in.clone(), i);
-            let mut y = Matrix::matrix_row(t_out.clone(), i);
+            let x = Matrix::matrix_row(t_in.clone(), i);
+            let y = Matrix::matrix_row(t_out.clone(), i);
 
             neural_network.a_s[0] = Matrix::matrix_copy(neural_network.a_s[0].clone(), x.clone());
             neural_network = self::NeuralNetwork::nn_forward(neural_network);
 
             for j in 0..n1 {
-                let mut diff = neural_network.a_s[neural_network.clone().nn_get_size() - 1].content[0][j as usize] - y.content[0][j as usize];
+                let diff = neural_network.a_s[neural_network.clone().nn_get_size() - 1].content[0][j as usize] - y.content[0][j as usize];
                 c += diff.powf(2.);
             }
         }

@@ -28,7 +28,7 @@ fn main() {
     println!("------------------------------------------------");
     println!("{}", NeuralNetwork::nn_cost(nn.clone(), td_in.clone(), td_out.clone()));
 
-    for i in 0..20*1000 {
+    for _i in 0..20*1000 {
         (nn, nn_g) = NeuralNetwork::nn_fin_diff(nn, nn_g, 1e-1, td_in.clone(), td_out.clone());
         nn = NeuralNetwork::nn_learn(nn, nn_g.clone(), 1e-1);
     }
