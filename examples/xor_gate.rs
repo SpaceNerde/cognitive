@@ -25,11 +25,11 @@ struct Xor{
 impl Xor {
     fn new() -> Self{
         // define standard values
-        let a0 = Matrix::new(1, 2);
         let w1 = Matrix::new(2, 2);
         let w2 = Matrix::new(2, 1);
         let b1 = Matrix::new(1, 2);
         let b2 = Matrix::new(1, 1);
+        let a0 = Matrix::new(1, 2);
         let a1 = Matrix::new(1,2);
         let a2 = Matrix::new(1,1);
 

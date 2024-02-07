@@ -20,14 +20,14 @@ impl Matrix {
     }
 
     pub fn print_matrix(self) {
-        println!("[");
+        println!("  [");
         for i in 0..self.rows {
             for j in 0..self.cols {
-                print!("    {:?}", self.content[i as usize][j as usize])
+                print!("        {:?}", self.content[i as usize][j as usize])
             }
             print!("\n");
         }
-        println!("]");
+        println!("  ]");
     }
 
     pub fn matrix_dot(matrix_1: Matrix, matrix_2: Matrix) -> Matrix{
