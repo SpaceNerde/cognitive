@@ -64,12 +64,12 @@ impl Matrix {
         buffer_matrix
     }
 
-    pub fn matrix_rand(mut self) -> Self{
+    pub fn matrix_rand(mut self, min: f32, max: f32) -> Self{
         let mut rng = rand::thread_rng();
 
         for i in 0..self.rows {
             for j in 0..self.cols {
-                self.content[i as usize][j as usize] = rng.gen_range(0.0..1.0) as f32;
+                self.content[i as usize][j as usize] = rng.gen_range(min..max);
             }
         }
 

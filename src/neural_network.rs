@@ -7,6 +7,7 @@ use crate::Matrix;
 
 // {2, 3, 3, 3, 1}
 // same thing but 3 hidden layers with 3 neurons each
+#[derive(Debug, Clone)]
 pub struct NeuralNetwork {
     pub architecture: Vec<i32>,
     // activations
@@ -44,6 +45,7 @@ impl NeuralNetwork {
 
     pub fn print_nn(neural_network: NeuralNetwork) {
         let size = neural_network.architecture.len();
+
         println!("Neural Network: ");
         for i in 0..size - 1 {
             print!("  weight {i}: ");
@@ -51,6 +53,17 @@ impl NeuralNetwork {
             print!("  bias {i}: ");
             neural_network.b_s[i].clone().print_matrix();
         }
+    }
+
+    pub fn nn_rand(mut self, min: f32, max: f32) -> Self{
+        let size = self.architecture.len();
+
+        for i in 0..size - 1 {
+            self.w_s[i] = self.w_s[i].clone().matrix_rand(min, max);
+            self.b_s[i] = self.b_s[i].clone().matrix_rand(min, max);
+        }
+
+        self
     }
 }
 

@@ -194,10 +194,10 @@ fn main() {
     let mut xor_g = xor.clone();
 
     // fill matrix with random numbers to initialize
-    xor.w1 = xor.w1.matrix_rand();
-    xor.w2 = xor.w2.matrix_rand();
-    xor.b1 = xor.b1.matrix_rand();
-    xor.b2 = xor.b2.matrix_rand();
+    xor.w1 = xor.w1.matrix_rand(0., 1.);
+    xor.w2 = xor.w2.matrix_rand(0., 1.);
+    xor.b1 = xor.b1.matrix_rand(0., 1.);
+    xor.b2 = xor.b2.matrix_rand(0., 1.);
 
     println!("cost: {}", cost(xor.clone(), td_in.clone(), td_out.clone()));
 
