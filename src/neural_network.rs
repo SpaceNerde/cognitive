@@ -89,8 +89,7 @@ impl NeuralNetwork {
                 for k in 0..neural_network.w_s[i].cols {
                     buffer = neural_network.w_s[i].content[j as usize][k as usize];
                     neural_network.w_s[i].content[j as usize][k as usize] += modi;
-                    nn_g.w_s[i].content[j as usize][k as usize] =
-                        (NeuralNetwork::nn_cost(neural_network, t_in, t_out) - c) / modi;
+                    nn_g.w_s[i].content[j as usize][k as usize] = (NeuralNetwork::nn_cost(neural_network, t_in, t_out) - c) / modi;
                     neural_network.w_s[i].content[j as usize][k as usize] = buffer;
                 }
             }
@@ -99,8 +98,7 @@ impl NeuralNetwork {
                 for k in 0..neural_network.b_s[i].cols {
                     buffer = neural_network.b_s[i].content[j as usize][k as usize];
                     neural_network.b_s[i].content[j as usize][k as usize] += modi;
-                    nn_g.b_s[i].content[j as usize][k as usize] =
-                        (NeuralNetwork::nn_cost(neural_network, t_in, t_out) - c) / modi;
+                    nn_g.b_s[i].content[j as usize][k as usize] = (NeuralNetwork::nn_cost(neural_network, t_in, t_out) - c) / modi;
                     neural_network.b_s[i].content[j as usize][k as usize] = buffer;
                 }
             }
@@ -129,9 +127,7 @@ impl NeuralNetwork {
             neural_network.nn_forward();
 
             for j in 0..n1 {
-                let diff =
-                    neural_network.a_s[neural_network.nn_get_size() - 1].content[0][j as usize]
-                        - y.content[0][j as usize];
+                let diff = neural_network.a_s[neural_network.nn_get_size() - 1].content[0][j as usize] - y.content[0][j as usize];
                 c += diff.powf(2.);
             }
         }
