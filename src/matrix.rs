@@ -19,7 +19,18 @@ impl Matrix {
         }
     }
 
-    pub fn print_matrix(self) {
+    pub fn map<F>(&mut self, func: F)
+        where
+            F: Fn(f32) -> f32,
+    {
+        for row in &mut self.content {
+            for element in row {
+                *element = func(*element);
+            }
+        }
+    }
+
+    pub fn print_matrix(&self) {
         println!("  [");
         for i in 0..self.rows {
             for j in 0..self.cols {
@@ -30,7 +41,7 @@ impl Matrix {
         println!("  ]");
     }
 
-    pub fn matrix_dot(matrix_1: Matrix, matrix_2: Matrix) -> Matrix{
+    pub fn matrix_dot(matrix_1: &Matrix, matrix_2: &Matrix) -> Matrix{
         assert_eq!(matrix_1.cols, matrix_2.rows, "Matrix dimensions mismatch");
 
         let mut buffer_matrix = Matrix::new(
@@ -49,14 +60,14 @@ impl Matrix {
         buffer_matrix
     }
 
-    pub fn matrix_sum(matrix_1: Matrix, matrix_2: Matrix) -> Matrix{
+    pub fn matrix_sum(matrix_1: &Matrix, matrix_2: &Matrix) -> Matrix{
         let mut buffer_matrix = Matrix::new(
             matrix_1.rows,
             matrix_2.cols
         );
 
-        for i in 0..matrix_1.rows {
-            for j in 0..matrix_2.cols {
+        for (i, row) in matrix_1.content.iter().enumerate() {
+            for (j, &value) in row.iter().enumerate() {
                 buffer_matrix.content[i as usize][j as usize] = matrix_1.content[i as usize][j as usize] + matrix_2.content[i as usize][j as usize];
             }
         }
@@ -87,7 +98,7 @@ impl Matrix {
     }
 
     // ohh my fucking god i'm a bad programmer XD
-    pub fn matrix_row(m: Matrix, n: i32) -> Matrix {
+    pub fn matrix_row(m: &Matrix, n: i32) -> Matrix {
         let mut buffer_matrix = Matrix::new(
             1,
             m.cols
@@ -107,8 +118,8 @@ impl Matrix {
         assert_eq!(m1.rows, m2.rows);
         assert_eq!(m1.cols, m2.cols);
 
-        for i in 0.. m1.rows {
-            for j in 0..m2.cols {
+        for i in 0..m1.rows {
+            for j in 0..m1.cols {
                 m1.content[i as usize][j as usize] = m2.content[i as usize][j as usize];
             }
         }
@@ -117,7 +128,7 @@ impl Matrix {
     }
 
     // copy's the column n2 of m2 into column n1 of m1
-    pub fn move_matrix_col(m1: Matrix, m2: Matrix, n1: i32, n2: i32) -> Matrix{
+    pub fn move_matrix_col(m1: &Matrix, m2: &Matrix, n1: i32, n2: i32) -> Matrix{
         assert_eq!(m1.rows, m2.rows);
 
         let mut buffer_matrix = Matrix::new(

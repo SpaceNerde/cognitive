@@ -5,11 +5,11 @@
 // 3 neurons in one hidden layer
 // 1 output
 
-use crate::Matrix;
+use crate::{Matrix, sigmoid};
 
 // {2, 3, 3, 3, 1}
 // same thing but 3 hidden layers with 3 neurons each
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct NeuralNetwork {
     pub architecture: Vec<i32>,
     // activations
@@ -64,28 +64,33 @@ impl NeuralNetwork {
         self
     }
 
-    pub fn nn_forward(mut self) -> Self {
-        for i in 0..self.clone().nn_get_size() - 1 {
-            self.a_s[i + 1] = Matrix::matrix_dot(self.a_s[i].clone(), self.w_s[i].clone());
-            self.a_s[i + 1] = Matrix::matrix_sum(self.a_s[i + 1].clone(), self.b_s[i].clone());
-            self.a_s[i + 1] = Matrix::matrix_sigmoid(self.a_s[i + 1].clone());
+    pub fn nn_forward(&mut self) {
+        for i in 0..self.nn_get_size() - 1 {
+            let dot_result = Matrix::matrix_dot(&self.a_s[i], &self.w_s[i]);
+            let mut sum_result = Matrix::matrix_sum(&dot_result, &self.b_s[i]);
+            sum_result.map(|x| sigmoid(x));  // Apply sigmoid to each element
+            self.a_s[i + 1] = sum_result;
         }
-
-        self
     }
 
     // i call it THE BLOCK
     // readability -1000000
-    pub fn nn_fin_diff(mut neural_network: NeuralNetwork, mut g: NeuralNetwork, modi: f32, t_in: Matrix, t_out: Matrix) -> (NeuralNetwork, NeuralNetwork){
+    pub fn nn_fin_diff<'a>(
+        neural_network: &'a mut NeuralNetwork,
+        nn_g: &'a mut NeuralNetwork,
+        modi: f32,
+        t_in: &Matrix,
+        t_out: &Matrix,
+    ) {
         let mut buffer;
-        let c = NeuralNetwork::nn_cost(neural_network.clone(), t_in.clone(), t_out.clone());
-
-        for i in 0..neural_network.clone().nn_get_size() - 1 {
+        let c = NeuralNetwork::nn_cost(neural_network, t_in, t_out);
+        for i in 0..neural_network.nn_get_size() - 1 {
             for j in 0..neural_network.w_s[i].rows {
                 for k in 0..neural_network.w_s[i].cols {
                     buffer = neural_network.w_s[i].content[j as usize][k as usize];
                     neural_network.w_s[i].content[j as usize][k as usize] += modi;
-                    g.w_s[i].content[j as usize][k as usize] = (NeuralNetwork::nn_cost(neural_network.clone(), t_in.clone(), t_out.clone()) - c)/modi;
+                    nn_g.w_s[i].content[j as usize][k as usize] =
+                        (NeuralNetwork::nn_cost(neural_network, t_in, t_out) - c) / modi;
                     neural_network.w_s[i].content[j as usize][k as usize] = buffer;
                 }
             }
@@ -94,40 +99,44 @@ impl NeuralNetwork {
                 for k in 0..neural_network.b_s[i].cols {
                     buffer = neural_network.b_s[i].content[j as usize][k as usize];
                     neural_network.b_s[i].content[j as usize][k as usize] += modi;
-                    g.b_s[i].content[j as usize][k as usize] = (NeuralNetwork::nn_cost(neural_network.clone(), t_in.clone(), t_out.clone()) - c)/modi;
+                    nn_g.b_s[i].content[j as usize][k as usize] =
+                        (NeuralNetwork::nn_cost(neural_network, t_in, t_out) - c) / modi;
                     neural_network.b_s[i].content[j as usize][k as usize] = buffer;
                 }
             }
         }
-
-        (neural_network, g)
     }
 
-    pub fn nn_cost(mut neural_network: NeuralNetwork, t_in: Matrix, t_out: Matrix) -> f32{
+    pub fn nn_cost(neural_network: &mut NeuralNetwork, t_in: &Matrix, t_out: &Matrix) -> f32 {
         assert_eq!(t_in.rows, t_out.rows);
-        assert_eq!(t_out.cols, neural_network.a_s[neural_network.clone().nn_get_size() - 1].cols);
+        assert_eq!(
+            t_out.cols,
+            neural_network.a_s[neural_network.nn_get_size() - 1].cols
+        );
 
-        // actual cost
+        // Actual cost
         let mut c = 0.;
 
-        // sizes
+        // Sizes
         let n0 = t_in.rows;
         let n1 = t_out.cols;
 
         for i in 0..n0 {
-            let x = Matrix::matrix_row(t_in.clone(), i);
-            let y = Matrix::matrix_row(t_out.clone(), i);
+            let x = Matrix::matrix_row(t_in, i);
+            let y = Matrix::matrix_row(t_out, i);
 
-            neural_network.a_s[0] = Matrix::matrix_copy(neural_network.a_s[0].clone(), x.clone());
-            neural_network = self::NeuralNetwork::nn_forward(neural_network);
+            neural_network.a_s[0] = x;
+            neural_network.nn_forward();
 
             for j in 0..n1 {
-                let diff = neural_network.a_s[neural_network.clone().nn_get_size() - 1].content[0][j as usize] - y.content[0][j as usize];
+                let diff =
+                    neural_network.a_s[neural_network.nn_get_size() - 1].content[0][j as usize]
+                        - y.content[0][j as usize];
                 c += diff.powf(2.);
             }
         }
 
-        c/n0 as f32
+        c / n0 as f32
     }
 
     pub fn nn_learn(mut neural_network: NeuralNetwork, nn_g: NeuralNetwork, learning_rate: f32) -> NeuralNetwork {
@@ -148,7 +157,7 @@ impl NeuralNetwork {
         neural_network
     }
 
-    pub fn nn_get_size(self) -> usize {
+    pub fn nn_get_size(&self) -> usize {
         self.architecture.len()
     }
 }
